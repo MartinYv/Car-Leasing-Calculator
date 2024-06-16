@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="Responsive.css">
+</head>
+
+<body>
+    <form class="form-container">
+        <div class="position-collumn">
+            <div>
+                <h1 class="title">Car Leasing Calculator</h1>
+            </div>
+            <div class="car-info-row">
+                <div class="info-column">
+                    <label for="carType">Car Type:</label>
+                    <select id="carType" class="dropdown">
+                        <option value="brandNew">Brand New</option>
+                        <option value="used">Used</option>
+                    </select>
+                    <label for="carValue">Car Value (€10.000 - €200.000):</label>
+                    <input type="text" id="carValue-text">
+                    <input type="range" id="carValue" min="10000" max="200000" value="120000">
+                </div>
+                <div class="info-column">
+                    <label for="leasePeriod">Lease Period (months):</label>
+                    <select id="leasePeriod" class="dropdown">
+                        <option value="60">60</option>
+                        <option value="48">48</option>
+                        <option value="36">36</option>
+                        <option value="24">24</option>
+                        <option value="12">12</option>
+                    </select>
+                    <label for="downPayment">Down Payment (10% - 50%):</label>
+                    <input type="text" id="downpayment-text">
+                    <input type="range" id="downPayment" min="10" max="50" value="10" step="5">
+                </div>
+            </div>
+        </div>
+        <div class="horizontal-line"></div>
+        <div class="position-collumn">
+            <div>
+                <h3 class="title" id="title-margin-top">Leasing Details</h3>
+            </div>
+            <div class="leasing-info-row">
+                <div class="info-column leasing">
+                    <p id="total-leasing-cost">Total Leasing Cost:</p>
+                    <p id="downpayment-amount">Down Payment:</p>
+                </div>
+                <div class="vertical-line"></div>
+                <div class="info-column leasing">
+                    <p id="monthly-instalment">Monthly Installment:</p>
+                    <p id="interest-rate">Interest Rate:</p>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    <script>
+        const brandNewCarInterestRate = 2.99;
+        const usedCarInterestRate = 3.7;
+
+        document.getElementById('carType').addEventListener('input', updateLeasingDetails);
+        document.getElementById('carValue').addEventListener('input', updateLeasingDetails);
+        document.getElementById('downPayment').addEventListener('input', updateLeasingDetails);
+        document.getElementById('leasePeriod').addEventListener('input', updateLeasingDetails);
+
+        document.getElementById('carValue-text').addEventListener('input', function () {
+
+            const carValueTextField = document.getElementById('carValue-text');
+            const carValueRangeField = document.getElementById('carValue');
+
+            let value = parseInt(carValueTextField.value);
+
+            if (isNaN(value) || value < parseInt(carValueRangeField.min)) {
+
+                value = parseInt(carValueRangeField.min);
+
+            } else if (value > parseInt(carValueRangeField.max)) {
+
+                value = parseInt(carValueRangeField.max);
+            }
+
+            carValueTextField.value = value;
+            carValueRangeField.value = value;
+
+            updateLeasingDetails();
+        })
+
+        document.getElementById('downpayment-text').addEventListener('input', function () {
+
+            const downnPaymentTextField = document.getElementById('downpayment-text');
+            const downnPaymentRangeField = document.getElementById('downPayment');
+
+            let value = parseInt(downnPaymentTextField.value);
+
+            if (isNaN(value) || value < parseInt(downnPaymentRangeField.min)) {
+
+                value = parseInt(downnPaymentRangeField.min);
+
+            } else if (value > parseInt(downnPaymentRangeField.max)) {
+
+                value = parseInt(downnPaymentRangeField.max);
+            }
+
+            downnPaymentTextField.value = value;
+            downnPaymentRangeField.value = value;
+
+            updateLeasingDetails();
+        })
+
+        function updateLeasingDetails() {
+
+            let interestRate = 0;
+
+            const carType = document.getElementById('carType');
+
+            const totalLeasingCostField = document.getElementById('total-leasing-cost');
+            const downPaymentAmountField = document.getElementById('downpayment-amount');
+            const monthlyInstalmentField = document.getElementById('monthly-instalment');
+            const interestRateField = document.getElementById('interest-rate');
+
+            const interestRateText = interestRateField.textContent.split(':')[0] + ': ';
+
+            if (carType.value == 'brandNew') {
+
+                interestRateField.textContent = interestRateText + brandNewCarInterestRate + '%';
+                interestRate = brandNewCarInterestRate;
+            }
+            else {
+
+                interestRateField.textContent = interestRateText + usedCarInterestRate + '%';
+                interestRate = usedCarInterestRate;
+            }
+
+            const carValue = document.getElementById('carValue').value;
+            document.getElementById('carValue-text').value = carValue; //sets text field with the result of 'range' field
+
+            const downPaymentPercentage = document.getElementById('downPayment').value;
+            document.getElementById('downpayment-text').value = downPaymentPercentage;//sets text field with the result of 'range' field
+
+            const leasePeriod = document.getElementById('leasePeriod').value;
+
+            //downnPayment
+            const downPaymentAmount = carValue * (downPaymentPercentage / 100);
+            let downPaymentText = document.getElementById('downpayment-amount').textContent.split(':')[0] + ': €';
+
+            document.getElementById('downpayment-amount').textContent = downPaymentText + downPaymentAmount.toFixed(2);
+
+            //monthlyPayment
+            const monthlyPaiment = CalculateMonthlyPaiment(carValue, interestRate / 100, leasePeriod)
+            const monthlyInstallmentText = monthlyInstalmentField.textContent.split(':')[0] + ': €';
+            const monthlyInstallmentReduced = monthlyPaiment - monthlyPaiment * downPaymentPercentage / 100;
+
+            monthlyInstalmentField.textContent = monthlyInstallmentText + monthlyInstallmentReduced.toFixed(2)
+
+            //totalLeasing
+            const leasingCostText = totalLeasingCostField.textContent.split(':')[0] + ': €';
+            const leasingCost = monthlyPaiment * leasePeriod;
+            const totalInterestForThePeriod = (leasingCost - carValue) * (downPaymentPercentage / 100);
+            const totalLeasingCost = leasingCost - totalInterestForThePeriod;
+
+            totalLeasingCostField.textContent = leasingCostText + totalLeasingCost.toFixed(2);
+        }
+
+        function CalculateMonthlyPaiment(principal, anualRate, months) {
+
+            const monthlyRate = anualRate / 12;
+            let numerator = principal * monthlyRate * Math.pow((1 + monthlyRate), months);
+            let denominator = Math.pow((1 + monthlyRate), months) - 1;
+            let monthlyPayment = numerator / denominator;
+
+            return monthlyPayment;
+        }
+
+        window.onload = updateLeasingDetails;
+    </script>
+</body>
+
+</html>

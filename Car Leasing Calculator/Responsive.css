@@ -1,0 +1,53 @@
+@media (max-width: 450px) {
+
+    body {
+        width: auto;
+        margin: 0em auto;
+        display: flex;
+        flex-direction: collumn;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        border: none;
+        flex-grow: 1;
+        margin-top: 1em;
+    }
+
+    .car-info-row,
+    .leasing-info-row {
+        display: inline-flex;
+        flex-direction: column;
+        gap: 1em;
+        justify-content: center;
+    }
+
+    .info-column {
+        width: auto;
+        margin-bottom: 0.5em;
+        padding: 0.1em;
+    }
+
+    .leasing {
+        gap: 0em;
+    }
+
+    .car-info-row,
+    .leasing-info-row {
+        display: inline;
+    }
+
+    .horizontal-line {
+        margin-top: 1em;
+    }
+
+    .vertical-line {
+        display: none;
+    }
+
+    .dropdown option {
+        font-size: 12px;
+    }
+
+}
